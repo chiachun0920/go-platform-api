@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/chiachun0920/platform-api/pkg/dto"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,6 +28,21 @@ func (repo *MessageDBRepo) SaveMessage(m *dto.Message) error {
 	return nil
 }
 
-func (repo *MessageDBRepo) ListMessages() ([]*dto.Message, error) {
-	return nil, nil
+func (repo *MessageDBRepo) ListMessages(
+	customerId string,
+) ([]*dto.Message, error) {
+	coll := repo.db.Database(repo.dbName).Collection(repo.collectionName)
+	cursor, err := coll.Find(
+		context.TODO(),
+		bson.D{{Key: "sender", Value: customerId}},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	var messages []*dto.Message
+	if err = cursor.All(context.TODO(), &messages); err != nil {
+		return nil, err
+	}
+	return messages, nil
 }

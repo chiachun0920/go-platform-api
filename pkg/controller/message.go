@@ -33,6 +33,17 @@ func convertTime(milseconds int64) time.Time {
 	return time.Unix(0, milseconds*int64(time.Millisecond))
 }
 
+func (controller *MessageController) ListCustomerMessage(c *gin.Context) {
+	customerId := c.Param("customerId")
+
+	messages, err := usecase.ListMessages(controller.messageRepo, customerId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	c.JSON(http.StatusOK, messages)
+}
+
 func (controller *MessageController) WebhookLine(c *gin.Context) {
 	var req schema.LineWebhookRequest
 	if err := c.BindJSON(&req); err != nil {

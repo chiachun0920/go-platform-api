@@ -14,6 +14,14 @@ func SaveMessage(repo service.MessageRepository, msg *dto.Message) error {
 	return nil
 }
 
+func ListMessages(repo service.MessageRepository, customerId string) ([]*dto.Message, error) {
+	messages, err := repo.ListMessages(customerId)
+	if err != nil {
+		return nil, err
+	}
+	return messages, nil
+}
+
 func SendMessage(messaging service.Messaging, msg schema.MessagingRequest) error {
 	return messaging.Send(msg)
 }

@@ -48,6 +48,7 @@ func main() {
 
 	router.POST("/webhook/line", msgController.WebhookLine)
 	router.POST("/messaging/line", msgController.SendMessage)
+	router.GET("/message/customer/:customerId", msgController.ListCustomerMessage)
 
 	router.Run()
 }
