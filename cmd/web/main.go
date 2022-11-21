@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/chiachun0920/platform-api/pkg/controller"
 	"github.com/chiachun0920/platform-api/pkg/external/lineapi"
@@ -45,6 +46,9 @@ func main() {
 	msgController := controller.NewMessageController(msgRepo, customerRepo, messaging)
 
 	router := gin.Default()
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	router.POST("/webhook/line", msgController.WebhookLine)
 	router.POST("/messaging/line", msgController.SendMessage)
