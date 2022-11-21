@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/chiachun0920/platform-api/pkg/controller"
 	"github.com/chiachun0920/platform-api/pkg/external/mongodb"
+	"github.com/chiachun0920/platform-api/pkg/repository/dbrepo"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -30,4 +33,11 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	msgRepo := dbrepo.NewMessageDBRepo(db, vp.GetString("db.dbName"))
+	msgController := controller.NewMessageController(msgRepo)
+
+	router := gin.Default()
+	router.POST("/webhook/line", msgController.WebhookLine)
+	router.Run()
 }
