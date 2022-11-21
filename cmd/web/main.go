@@ -36,12 +36,13 @@ func main() {
 	}()
 
 	msgRepo := dbrepo.NewMessageDBRepo(db, vp.GetString("db.dbName"))
+	customerRepo := dbrepo.NewCustomerDBRepo(db, vp.GetString("db.dbName"))
 
 	messaging := lineapi.NewLineAPI(
 		vp.GetString("line.secret"),
 		vp.GetString("line.token"),
 	)
-	msgController := controller.NewMessageController(msgRepo, messaging)
+	msgController := controller.NewMessageController(msgRepo, customerRepo, messaging)
 
 	router := gin.Default()
 

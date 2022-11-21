@@ -15,6 +15,7 @@ type MessageEvent struct {
 	Type        string  `json:"type"`
 	MessageData Message `json:"message"`
 	SourceData  Source  `json:"source"`
+	Timestamp   int64   `json:"timestamp"`
 }
 
 type LineWebhookRequest struct {

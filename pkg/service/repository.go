@@ -6,3 +6,7 @@ type MessageRepository interface {
 	ListMessages() ([]*dto.Message, error)
 	SaveMessage(m *dto.Message) error
 }
+
+type CustomerRepository interface {
+	UpsertCustomerProfile(profile *dto.CustomerProfile) error
+}

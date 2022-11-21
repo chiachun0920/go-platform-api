@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/chiachun0920/platform-api/pkg/dto"
 	"github.com/chiachun0920/platform-api/pkg/dto/schema"
@@ -11,15 +12,25 @@ import (
 )
 
 type MessageController struct {
-	messageRepo service.MessageRepository
-	messaging   service.Messaging
+	messageRepo  service.MessageRepository
+	customerRepo service.CustomerRepository
+	messaging    service.Messaging
 }
 
-func NewMessageController(repo service.MessageRepository, messaging service.Messaging) *MessageController {
+func NewMessageController(
+	msgRepo service.MessageRepository,
+	customerRepo service.CustomerRepository,
+	messaging service.Messaging,
+) *MessageController {
 	return &MessageController{
-		messageRepo: repo,
-		messaging:   messaging,
+		messageRepo:  msgRepo,
+		customerRepo: customerRepo,
+		messaging:    messaging,
 	}
+}
+
+func convertTime(milseconds int64) time.Time {
+	return time.Unix(0, milseconds*int64(time.Millisecond))
 }
 
 func (controller *MessageController) WebhookLine(c *gin.Context) {
@@ -29,12 +40,26 @@ func (controller *MessageController) WebhookLine(c *gin.Context) {
 		return
 	}
 
-	text := req.Events[0].MessageData.Text
+	event := req.Events[0]
+
 	if err := usecase.SaveMessage(controller.messageRepo, &dto.Message{
-		Text: text,
+		MessageType: event.MessageData.Type,
+		Text:        event.MessageData.Text,
+		Sender:      event.SourceData.UserID,
+		CreatedAt:   convertTime(event.Timestamp),
+		UpdatedAt:   convertTime(event.Timestamp),
 	}); err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
+	}
+
+	customerId := req.Events[0].SourceData.UserID
+	if err := usecase.UpdateCustomerProfile(
+		controller.customerRepo,
+		controller.messaging,
+		customerId,
+	); err != nil {
+		c.JSON(http.StatusInternalServerError, nil)
 	}
 
 	c.JSON(http.StatusOK, nil)
