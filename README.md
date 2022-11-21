@@ -32,7 +32,7 @@ make run
 ### Send back message to customer
 1. you can get customerId from
 	* collection: `message`
-	* field: `sender`
+	* field: `user_id`
 
 ```bash
 # curl http://localhost:8080/messaging/line -X POST -d '{"To": "Ue289fb7b4854f46458a934d286cb178d", "Text": "hello"}'
