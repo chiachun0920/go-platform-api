@@ -1,7 +1,7 @@
 {
     "db": {
         "dbName": "dev",
-        "uri": "mongo",
+        "uri": "localhost",
         "port": "27017",
         "protocol": "mongodb"
     },
