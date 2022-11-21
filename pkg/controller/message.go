@@ -12,10 +12,14 @@ import (
 
 type MessageController struct {
 	messageRepo service.MessageRepository
+	messaging   service.Messaging
 }
 
-func NewMessageController(repo service.MessageRepository) *MessageController {
-	return &MessageController{messageRepo: repo}
+func NewMessageController(repo service.MessageRepository, messaging service.Messaging) *MessageController {
+	return &MessageController{
+		messageRepo: repo,
+		messaging:   messaging,
+	}
 }
 
 func (controller *MessageController) WebhookLine(c *gin.Context) {
@@ -30,6 +34,20 @@ func (controller *MessageController) WebhookLine(c *gin.Context) {
 		Text: text,
 	}); err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+func (controller *MessageController) SendMessage(c *gin.Context) {
+	var req schema.MessagingRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, nil)
+	}
+
+	if err := usecase.SendMessage(controller.messaging, req); err != nil {
+		c.JSON(http.StatusBadRequest, nil)
 		return
 	}
 

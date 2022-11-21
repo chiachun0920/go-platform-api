@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/chiachun0920/platform-api/pkg/controller"
+	"github.com/chiachun0920/platform-api/pkg/external/lineapi"
 	"github.com/chiachun0920/platform-api/pkg/external/mongodb"
 	"github.com/chiachun0920/platform-api/pkg/repository/dbrepo"
 	"github.com/gin-gonic/gin"
@@ -35,9 +36,17 @@ func main() {
 	}()
 
 	msgRepo := dbrepo.NewMessageDBRepo(db, vp.GetString("db.dbName"))
-	msgController := controller.NewMessageController(msgRepo)
+
+	messaging := lineapi.NewLineAPI(
+		vp.GetString("line.secret"),
+		vp.GetString("line.token"),
+	)
+	msgController := controller.NewMessageController(msgRepo, messaging)
 
 	router := gin.Default()
+
 	router.POST("/webhook/line", msgController.WebhookLine)
+	router.POST("/messaging/line", msgController.SendMessage)
+
 	router.Run()
 }
