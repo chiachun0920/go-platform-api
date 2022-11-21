@@ -1,0 +1,12 @@
+{
+    "db": {
+        "dbName": "dev",
+        "uri": "mongo",
+        "port": "27017",
+        "protocol": "mongodb"
+    },
+    "line": {
+        "token": "",
+        "secret": ""
+    }
+}
