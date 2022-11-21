@@ -1,5 +1,12 @@
 FROM golang
 
+RUN mkdir -p /app
+
+WORKDIR /app
 COPY . .
 
-CMD ["go", "run", "./..."]
+RUN go mod download
+
+RUN go build -o app ./cmd/web
+
+ENTRYPOINT ["./app"]
